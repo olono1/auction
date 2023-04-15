@@ -1,0 +1,108 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+
+function AuctionPage({ auction }) {
+
+  const [bids, setBids] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [bidedAmount, setBidedAmount] = useState(0);
+
+  useEffect(() => {
+    axios.get(`http://localhost:5000/bids?auctionId=${auction.id}`)
+      .then(res => {
+        setBids(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+
+    axios.get('http://localhost:5000/users')
+      .then(res => {
+        setUsers(res.data);
+      }
+      )
+      .catch(err => {
+        console.log(err);
+      }
+      )
+    }, [, bidedAmount]);
+
+
+
+
+  const bidAmount = (e) => {
+    e.preventDefault();
+
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    fetch("http://localhost:5000/bids", {
+      method: 'POST',
+      headers: myHeaders,
+      mode: 'cors',
+      cache: 'default',
+      body: JSON.stringify({
+        "amount": bidedAmount,
+        "auctionId": auction.id,
+        "userId": 1
+      })
+    })
+    .then(res => {
+      res.json()
+      //If the response status is 400, it means that the bid is lower than the winning bid 
+      //Display a nice message in the html ui to the user for 5 seconds
+      if (res.status === 400) {
+        console.log("Bid is lower than the winning bid");
+        
+      }
+    })
+    .then(res => {
+      setBidedAmount(0);
+    })
+    .catch(err => {
+      console.log(err);
+      console.log("error");
+    })
+  }
+
+
+  return (
+    <div>
+      <h2>{auction.name}</h2>
+      <p>{auction.description}</p>
+      <h2>Winning Bid</h2>
+      {/**Find the max amount from the bids to this auction. If there is note, write a message */}
+      {bids.length > 0 ? (
+      <p>{Math.max(...bids.map(bid => bid.amount))}</p>
+      ) : (
+      <p>No bids yet</p>
+      )}
+
+      <h3>Bids</h3>
+      <ul>
+        {bids.map(bid => (
+          <li key={bid.id}>
+            <p>{bid.amount}</p>
+            {/**First check if users are fetched from server */}
+            {users.length > 0 && (
+            <p>{users.find(user => user.id === bid.userId).username}</p>
+            )}
+          </li>
+        ))}
+      </ul>
+      {/** Give the user an option to enter an amount that he wants to bid. It cannot be lower that the winning bid
+       * will send a POST request to the server with the amount and the auctionId and the userId
+       */}
+      <form onSubmit={bidAmount}> 
+        <input type="number" value={bidedAmount} onChange={(e)=>setBidedAmount(e.target.value) } name="amount" />
+        <button type="submit">Bid</button>
+      </form>
+      
+
+
+    </div>
+  );
+}
+
+export default AuctionPage;
