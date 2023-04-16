@@ -1,0 +1,17 @@
+.auction-link {
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f7f7f7;
+}
+
+.auction-link a {
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.auction-link a:hover {
+  color: #000;
+}
