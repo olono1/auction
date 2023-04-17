@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import './AuctionPage.css';
 
 function AuctionPage({ auction }) {
 
@@ -26,10 +26,7 @@ function AuctionPage({ auction }) {
         console.log(err);
       }
       )
-    }, [, bidedAmount]);
-
-
-
+  }, [, bidedAmount]);
 
   const bidAmount = (e) => {
     e.preventDefault();
@@ -53,8 +50,7 @@ function AuctionPage({ auction }) {
       //If the response status is 400, it means that the bid is lower than the winning bid 
       //Display a nice message in the html ui to the user for 5 seconds
       if (res.status === 400) {
-        console.log("Bid is lower than the winning bid");
-        
+        alert('Bid is lower than the winning bid');        
       }
     })
     .then(res => {
@@ -69,24 +65,24 @@ function AuctionPage({ auction }) {
 
   return (
     <div>
-      <h2>{auction.name}</h2>
-      <p>{auction.description}</p>
-      <h2>Winning Bid</h2>
+      <h2 className="auction_h2">{auction.name}</h2>
+      <p className="auction_p">{auction.description}</p>
+      <h2 className="auction_h2">Winning Bid</h2>
       {/**Find the max amount from the bids to this auction. If there is note, write a message */}
       {bids.length > 0 ? (
-      <p>{Math.max(...bids.map(bid => bid.amount))}</p>
+      <p className="auction_p">{Math.max(...bids.map(bid => bid.amount))}</p>
       ) : (
-      <p>No bids yet</p>
+      <p className="auction_p">No bids yet</p>
       )}
 
-      <h3>Bids</h3>
-      <ul>
+      <h3 className="auction_h3">Bids</h3>
+      <ul className="auction_ul">
         {bids.map(bid => (
-          <li key={bid.id}>
-            <p>{bid.amount}</p>
+          <li key={bid.id} className="auction_li">
+            <p className="auction_p">{bid.amount}</p>
             {/**First check if users are fetched from server */}
             {users.length > 0 && (
-            <p>{users.find(user => user.id === bid.userId).username}</p>
+            <p className="auction_p">{users.find(user => user.id === bid.userId).username}</p>
             )}
           </li>
         ))}
@@ -94,9 +90,9 @@ function AuctionPage({ auction }) {
       {/** Give the user an option to enter an amount that he wants to bid. It cannot be lower that the winning bid
        * will send a POST request to the server with the amount and the auctionId and the userId
        */}
-      <form onSubmit={bidAmount}> 
-        <input type="number" value={bidedAmount} onChange={(e)=>setBidedAmount(e.target.value) } name="amount" />
-        <button type="submit">Bid</button>
+      <form onSubmit={bidAmount} className="auction_form"> 
+        <input className="auction_input" type="number" value={bidedAmount} onChange={(e)=>setBidedAmount(e.target.value) } name="amount" />
+        <button className="auction_button" type="submit">Bid</button>
       </form>
       
 

@@ -1,0 +1,52 @@
+.auction_h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  margin-left: 20px;
+}
+
+.auction_h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  margin-left: 20px;
+}
+
+.auction_p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  margin-left: 20px;
+}
+
+.auction_ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.auction_li {
+  margin-bottom: 0.5rem;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.auction_form {
+  display: flex;
+  margin-top: 1rem;
+}
+
+.auction_input[type="number"] {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  margin-right: 0.5rem;
+  margin-left: 20px;
+}
+
+.auction_button[type="submit"] {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
