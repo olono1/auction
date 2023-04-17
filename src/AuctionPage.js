@@ -3,15 +3,20 @@ import axios from 'axios';
 import './AuctionPage.css';
 
 function AuctionPage({ auction, userId }) {
-
   const [bids, setBids] = useState([]);
   const [users, setUsers] = useState([]);
   const [bidedAmount, setBidedAmount] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     axios.get(`http://localhost:5000/bids?auctionId=${auction.id}`)
       .then(res => {
         setBids(res.data);
+
+        if (res.data.length === 3) {
+          alert('Congratulations, you won the auction');
+          generateInvoice(res.data); // call generateInvoice function after the alert
+        }
       })
       .catch(err => {
         console.log(err);
@@ -20,16 +25,19 @@ function AuctionPage({ auction, userId }) {
     axios.get('http://localhost:5000/users')
       .then(res => {
         setUsers(res.data);
-      }
-      )
+      })
       .catch(err => {
         console.log(err);
-      }
-      )
+      })
   }, [, bidedAmount]);
 
   const bidAmount = (e) => {
     e.preventDefault();
+
+    if (bids.length === 3) {
+      alert('The auction has reached the maximum number of bids');
+      return;
+    }
 
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -45,24 +53,37 @@ function AuctionPage({ auction, userId }) {
         "userId": userId
       })
     })
-    .then(res => {
-      res.json()
-      //If the response status is 400, it means that the bid is lower than the winning bid 
-      //Display a nice message in the html ui to the user for 5 seconds
-      if (res.status === 400) {
-        alert('Bid is lower than the winning bid');        
-      }
-    })
-    .then(res => {
-      setBidedAmount(0);
-    })
-    .catch(err => {
-      console.log(err);
-      console.log("error");
-    })
+      .then(res => {
+        if (res.status === 400) {
+          alert('Bid is lower than the winning bid');
+          return;
+        }
+        res.json().then(() => {
+          setBidedAmount(0);
+          setErrorMessage('');
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
-
+  const generateInvoice = (bids) => {
+    // Create invoice HTML string
+    let invoiceHTML = `<h2>Invoice for Auction ${auction.name}</h2>`;
+    invoiceHTML += `<p>Winning Bid: ${Math.max(...bids.map(bid => bid.amount))}</p>`;
+    invoiceHTML += `<h3>Bids</h3>`;
+    invoiceHTML += `<ul>`;
+    bids.forEach(bid => {
+      invoiceHTML += `<li>${bid.amount} - ${users.find(user => user.id === bid.userId).username}</li>`;
+    });
+    invoiceHTML += `</ul>`;
+  
+    // Open a new window and print the invoice
+    const invoiceWindow = window.open('', 'Invoice');
+    invoiceWindow.document.write(invoiceHTML);
+  };
+  
   return (
     <div>
       <h2 className="auction_h2">{auction.name}</h2>
