@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AuctionPage.css';
 
-function AuctionPage({ auction }) {
+function AuctionPage({ auction, userId }) {
 
   const [bids, setBids] = useState([]);
   const [users, setUsers] = useState([]);
@@ -42,7 +42,7 @@ function AuctionPage({ auction }) {
       body: JSON.stringify({
         "amount": bidedAmount,
         "auctionId": auction.id,
-        "userId": 1
+        "userId": userId
       })
     })
     .then(res => {
@@ -70,7 +70,13 @@ function AuctionPage({ auction }) {
       <h2 className="auction_h2">Winning Bid</h2>
       {/**Find the max amount from the bids to this auction. If there is note, write a message */}
       {bids.length > 0 ? (
+      <div>
       <p className="auction_p">{Math.max(...bids.map(bid => bid.amount))}</p>
+      {/**Find the bid object with the highest amount, and get the corresponding user's username */}
+      {users.length > 0 && (
+        <p className="auction_p">{users.find(user => user.id === bids.reduce((prev, current) => prev.amount > current.amount ? prev : current).userId).username}</p>
+      )}
+      </div>
       ) : (
       <p className="auction_p">No bids yet</p>
       )}
@@ -94,9 +100,6 @@ function AuctionPage({ auction }) {
         <input className="auction_input" type="number" value={bidedAmount} onChange={(e)=>setBidedAmount(e.target.value) } name="amount" />
         <button className="auction_button" type="submit">Bid</button>
       </form>
-      
-
-
     </div>
   );
 }

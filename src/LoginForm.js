@@ -20,6 +20,7 @@ function LoginForm(props) {
     const user = props.users.find((user) => user.email === email && user.password === password);
     if (user) {
       props.setLoggedIn(true);
+      props.setUserId(user.id);
       navigate('/');
     } else {
       alert('Invalid email or password');

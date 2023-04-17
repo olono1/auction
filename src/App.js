@@ -11,6 +11,7 @@ function App() {
   const [auctions, setAuctions] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
   const [users, setUsers] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     axios.get('http://localhost:5000/auctions')
@@ -35,18 +36,23 @@ function App() {
       {loggedIn ? (
         <nav className="navbar">
           <ul className="navbar-list">
-            <li><LogoutButton setLoggedIn={setLoggedIn} /></li>
+            {loggedIn ? (
+              <>
+                <li><Link to="/" className="home">Home</Link></li>
+                <li className="ml-auto"><LogoutButton setLoggedIn={setLoggedIn} setUserId={setUserId} /></li>
+              </>
+            ) : null}
           </ul>
         </nav>
       ) : null}
       <Routes>
         {!loggedIn ? (
-          <Route path="/" element={<LoginForm setLoggedIn={setLoggedIn} users={users} />} />
+          <Route path="/" element={<LoginForm setLoggedIn={setLoggedIn} setUserId={setUserId} users={users} />} />
         ) : (
           <>
             <Route path="/" element={<AuctionList auctions={auctions} />} />
             {auctions.map(auction => (
-              <Route key={auction.id} path={`/auctions/${auction.id}`} element={<AuctionPage auction={auction} />} />
+              <Route key={auction.id} path={`/auctions/${auction.id}`} element={<AuctionPage auction={auction} userId={userId}/>} />
             ))}
           </>
         )}

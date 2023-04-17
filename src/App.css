@@ -9,10 +9,13 @@
 
 .navbar-list {
   list-style-type: none;
+  list-style: none;
   display: flex;
   align-items: center;
   margin: 0;
   padding: 0;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .navbar-link {
@@ -24,4 +27,21 @@
 .navbar-link:hover {
   background-color: #5c5c5c;
   border-radius: 5px;
+}
+
+.home{
+  color: white;
+  text-decoration: none;
+  padding: 5px;
+  border: none;
+  background-color: #2f2f2f;
+}
+
+.home:hover {
+  background-color: #5c5c5c;
+  border-radius: 5px;
+}
+
+.ml-auto {
+margin-left: auto;
 }
