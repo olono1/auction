@@ -69,17 +69,19 @@ function AuctionPage({ auction, userId }) {
   }
 
   const generateInvoice = (bids) => {
-    // Create invoice HTML string
+
+    const winningBid = Math.max(...bids.map(bid => bid.amount));
+    const winningUser = users.find(user => user.id === bids.reduce((prev, current) => prev.amount > current.amount ? prev : current).userId);
+
     let invoiceHTML = `<h2>Invoice for Auction ${auction.name}</h2>`;
-    invoiceHTML += `<p>Winning Bid: ${Math.max(...bids.map(bid => bid.amount))}</p>`;
-    invoiceHTML += `<h3>Bids</h3>`;
+
+    invoiceHTML += `<p>User: ${winningUser.username}</p>`;
+    invoiceHTML += `<p>Price: ${winningBid}</p>`;
+    invoiceHTML += `<p>Billing Information for ${winningUser.username}:</p>`;
     invoiceHTML += `<ul>`;
-    bids.forEach(bid => {
-      invoiceHTML += `<li>${bid.amount} - ${users.find(user => user.id === bid.userId).username}</li>`;
-    });
     invoiceHTML += `</ul>`;
   
-    // Open a new window and print the invoice
+    // Open a new window
     const invoiceWindow = window.open('', 'Invoice');
     invoiceWindow.document.write(invoiceHTML);
   };
