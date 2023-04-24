@@ -15,7 +15,7 @@ function LoginForm(props) {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event, email, password) => {
     event.preventDefault();
     const user = props.users.find((user) => user.email === email && user.password === password);
     if (user) {
@@ -30,7 +30,7 @@ function LoginForm(props) {
   return (
     <div className="form-wrapper">
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={(event) => handleSubmit(event, email, password)}>
         <label htmlFor="email" className="form-label">
           Email
         </label>
