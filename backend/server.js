@@ -16,26 +16,25 @@ async function main() {
     user: 'root',
     password: 'demo',
     database: 'e_auction'
-  });
+  })
+  .catch(err => console.error(err));  
 
   console.log('Connected to database');
 
   let auctions = await connection.query('SELECT * FROM auctions');
-  let bids = await connection.query('SELECT * FROM bids');
   let users = await connection.query('SELECT * FROM users');
 
   auctions = auctions[0];
-  bids = bids[0];
   users = users[0];
 
   app.get('/auctions', (req, res) => {
     res.send(auctions);
   });
 
-  app.get('/bids', (req, res) => {
+  app.get('/bids', async (req, res) => {
     const auctionId = req.query.auctionId;
-    const filteredBids = bids.filter(bid => bid.auctionId == auctionId);
-    res.send(filteredBids);
+    const [rows] = await connection.query('SELECT * FROM bids WHERE auctionId = ?', [auctionId]);
+    res.send(rows);
   });
 
   app.get('/users', (req, res) => {
@@ -64,6 +63,21 @@ async function main() {
       const newBid = { id: result.insertId, amount, auctionId, userId };
       res.status(201).send(newBid);
     }
+  });
+
+  app.post('/users', (req, res) => {
+    const { email, password, username } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email field is required' });
+    }
+    const newUser = { email, password, username };
+    connection.query('INSERT INTO users SET ?', newUser, (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+      res.status(201).json({ message: 'User created successfully', id: results.insertId });
+    });
   });
 
   app.put('/auctions/:id', async (req, res) => {

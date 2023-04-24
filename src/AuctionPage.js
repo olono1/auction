@@ -10,7 +10,7 @@ function AuctionPage({ auction, userId }) {
   const [disableBid, setDisableBid] = useState(false);
 
   useEffect(() => {
-    axios.get(`https://example.com/bids?auctionId=${auction.id}`)
+    axios.get(`http://localhost:5000/bids?auctionId=${auction.id}`)
       .then(res => {
         setBids(res.data);
 
@@ -24,7 +24,7 @@ function AuctionPage({ auction, userId }) {
         console.log(err);
       })
 
-    axios.get('https://example.com/users')
+    axios.get('http://localhost:5000/users')
       .then(res => {
         setUsers(res.data);
       })
@@ -41,7 +41,7 @@ function AuctionPage({ auction, userId }) {
       return;
     }
 
-    axios.post('https://example.com/bids', {
+    axios.post('http://localhost:5000/bids', {
       amount: bidedAmount,
       auctionId: auction.id,
       userId: userId
