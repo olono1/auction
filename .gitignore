@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/charge-card-worker
 /.pnp
 .pnp.js
 

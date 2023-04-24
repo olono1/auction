@@ -1,69 +1,80 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const mysql = require('mysql2/promise');
 const app = express();
 const port = 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
 
-let auctions = [
-  { id: 1, name: "Auction 1", description: "This is the first auction", startingBid: 10, endDate: "2023-04-30T12:00:00Z", ended: false },
-  { id: 2, name: "Auction 2", description: "This is the second auction", startingBid: 20, endDate: "2023-05-01T12:00:00Z", ended: false },
-  { id: 3, name: "Auction 3", description: "This is the third auction", startingBid: 30, endDate: "2023-05-02T12:00:00Z", ended: false },
-];
+let connection;
 
-let bids = [];
+async function main() {
+  connection = await mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'demo',
+    database: 'e_auction'
+  });
 
-let users = [
-  { id: 1, email: 'aaa@aaa.aaa', password: 'aaa', username: 'aaa' },
-  { id: 2, email: 'bbb@bbb.bbb', password: 'bbb', username: 'bbb' },
-  { id: 3, email: 'ccc@ccc.ccc', password: 'ccc', username: 'ccc' },
-];
+  console.log('Connected to database');
 
-app.get('/auctions', (req, res) => {
-  res.send(auctions);
-});
+  let auctions = await connection.query('SELECT * FROM auctions');
+  let bids = await connection.query('SELECT * FROM bids');
+  let users = await connection.query('SELECT * FROM users');
 
-app.get('/bids', (req, res) => {
-  const auctionId = req.query.auctionId;
-  const filteredBids = bids.filter(bid => bid.auctionId == auctionId);
-  res.send(filteredBids);
-});
+  auctions = auctions[0];
+  bids = bids[0];
+  users = users[0];
 
-app.get('/users', (req, res) => {
-  res.send(users);
-});
+  app.get('/auctions', (req, res) => {
+    res.send(auctions);
+  });
 
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-  const user = users.find(user => user.email == email && user.password == password);
-  if (user) {
-    res.status(200).send({ message: "Login successful", user: { id: user.id, email: user.email } });
-  } else {
-    res.status(401).send({ message: "Invalid email or password" });
-  }
-});
+  app.get('/bids', (req, res) => {
+    const auctionId = req.query.auctionId;
+    const filteredBids = bids.filter(bid => bid.auctionId == auctionId);
+    res.send(filteredBids);
+  });
 
+  app.get('/users', (req, res) => {
+    res.send(users);
+  });
 
-app.post('/bids', (req, res) => {
-  const { amount, auctionId, userId } = req.body;
-  const highestBid = bids.filter((bid) => bid.auctionId == auctionId).sort((a, b) => b.amount - a.amount)[0];
-  if (highestBid && amount <= highestBid.amount) {
-    res.status(400).send({ message: 'Bid amount must be higher than the current highest bid' });
-  } else {
-    const newBid = { id: bids.length + 1, amount, auctionId, userId };
-    bids.push(newBid);
-    res.status(201).send(newBid);
-  }
-});
+  app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    const [rows, fields] = await connection.execute('SELECT * FROM users WHERE email = ? AND password = ?', [email, password]);
+    if (rows.length > 0) {
+      const user = rows[0];
+      res.status(200).send({ message: "Login successful", user: { id: user.id, email: user.email } });
+    } else {
+      res.status(401).send({ message: "Invalid email or password" });
+    }
+  });
 
-app.put('/auctions/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const auction = auctions.find(auction => auction.id === id);
-  auction.ended = true;
-});
+  app.post('/bids', async (req, res) => {
+    const { amount, auctionId, userId } = req.body;
+    const [highestBidRows, highestBidFields] = await connection.execute('SELECT * FROM bids WHERE auctionId = ? ORDER BY amount DESC LIMIT 1', [auctionId]);
+    const highestBid = highestBidRows[0];
+    if (highestBid && amount <= highestBid.amount) {
+      res.status(400).send({ message: 'Bid amount must be higher than the current highest bid' });
+    } else {
+      const [result, fields] = await connection.execute('INSERT INTO bids (amount, auctionId, userId) VALUES (?, ?, ?)', [amount, auctionId, userId]);
+      const newBid = { id: result.insertId, amount, auctionId, userId };
+      res.status(201).send(newBid);
+    }
+  });
 
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
-});
+  app.put('/auctions/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    await connection.execute('UPDATE auctions SET ended = true WHERE id = ?', [id]);
+    res.status(200).send({ message: 'Auction ended successfully' });
+  });
+
+  app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
+  });
+}
+
+main().catch(err => console.error(err));
