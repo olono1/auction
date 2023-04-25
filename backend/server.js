@@ -1,7 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const mysql = require('mysql2/promise');
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import worker from './worker.js';
+import { Client, logger } from 'camunda-external-task-client-js';
+import open from 'open';
+import mysql from 'mysql2/promise';
+
 const app = express();
 const port = 5000;
 
@@ -88,6 +92,7 @@ async function main() {
 
   app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
+    worker();
   });
 }
 
