@@ -26,8 +26,8 @@ CREATE TABLE `auctions` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `description` text NOT NULL,
-  `startingBid` decimal(10,2) NOT NULL,
   `ended` tinyint(1) NOT NULL,
+  `userId` int DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -38,7 +38,7 @@ CREATE TABLE `auctions` (
 
 LOCK TABLES `auctions` WRITE;
 /*!40000 ALTER TABLE `auctions` DISABLE KEYS */;
-INSERT INTO `auctions` VALUES (1,'Auction 1','This is the first auction',40.00,0),(2,'Auction 2','This is the second auction',50.00,0),(3,'Auction 3','This is the third auction',60.00,0);
+INSERT INTO `auctions` VALUES (1,'Auction 1','This is the first auction',0,1),(2,'Auction 2','This is the second auction',0,2),(3,'Auction 3','This is the third auction',0,3);
 /*!40000 ALTER TABLE `auctions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -59,7 +59,7 @@ CREATE TABLE `bids` (
   KEY `userId` (`userId`),
   CONSTRAINT `bids_ibfk_1` FOREIGN KEY (`auctionId`) REFERENCES `auctions` (`id`),
   CONSTRAINT `bids_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,6 +83,8 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
+  `IBAN` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -93,7 +95,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (11,'aaa@aaa.aaa','aaa','aaa'),(12,'bbb@bbb.bbb','bbb','bbb'),(13,'ccc@ccc.ccc','ccc','ccc');
+INSERT INTO `users` VALUES (1,'aaa@aaa.aaa','aaa','aaa','SK11 1111 1111 1111 1111 1111','address 1/1 city1'),(2,'bbb@bbb.bbb','bbb','bbb','SK22 2222 2222 2222 2222 2222','address 2/2 city2'),(3,'ccc@ccc.ccc','ccc','ccc','SK33 3333 3333 3333 3333 3333','address 3/3 city3');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -106,4 +108,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-24 23:10:08
+-- Dump completed on 2023-04-27 16:14:09
