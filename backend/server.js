@@ -18,7 +18,7 @@ async function main() {
   connection = await mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'demo',
+    password: 'demodemo',
     database: 'e_auction'
   })
   .catch(err => console.error(err));  
@@ -89,6 +89,34 @@ async function main() {
     await connection.execute('UPDATE auctions SET ended = true WHERE id = ?', [id]);
     res.status(200).send({ message: 'Auction ended successfully' });
   });
+
+  app.post('/auctions', async (req, res) => {
+    const { name, description, userId } = req.body;
+    const [result, fields] = await connection.execute('INSERT INTO auctions (name, description, userId) VALUES (?, ?, ?)', [name, description, userId]);
+    const newAuction = { id: result.insertId, name, description, userId };
+    res.status(201).send(newAuction);
+  });
+
+  // Create an Invoice GET endpoint that takes as parameters the auction and user and bid and send the invoice to the user
+  app.get('/invoice', async (req, res) => {
+    const auctionId = req.query.auctionId;
+    const userId = req.query.userId;
+    const bidId = req.query.bidId;
+    const [auctionRows] = await connection.query('SELECT * FROM auctions WHERE id = ?', [auctionId]);
+    const [bidRows] = await connection.query('SELECT * FROM bids WHERE id = ?', [bidId]);
+    const [userRows] = await connection.query('SELECT * FROM users WHERE id = ?', [userId]);
+    const auction = auctionRows[0];
+    const invoice = {
+      auctionName: auction.name,
+      auctionDescription: auction.description,
+      bidAmount: bidRows[0].amount,
+      userEmail: userRows[0].email
+    };
+    res.send(invoice);
+  });
+
+
+
 
   app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);

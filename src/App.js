@@ -50,7 +50,7 @@ function App() {
           <Route path="/" element={<LoginForm setLoggedIn={setLoggedIn} setUserId={setUserId} users={users} />} />
         ) : (
           <>
-            <Route path="/" element={<AuctionList auctions={auctions} />} />
+            <Route path="/" element={<AuctionList auctions={auctions} userId={userId} />} />
             {auctions.map(auction => (
               <Route key={auction.id} path={`/auctions/${auction.id}`} element={<AuctionPage auction={auction} userId={userId}/>} />
             ))}

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './AuctionList.css';
 
-function AuctionList({ }) {
+function AuctionList({ userId}) {
     const [auctions, setAuctions] = useState([]);
 
     useEffect(() => {
@@ -16,6 +16,18 @@ function AuctionList({ }) {
         });
     }, []);
 
+    const addAuction = (e) => {
+      e.preventDefault();
+      const name = e.target[0].value;
+      const description = e.target[1].value;
+      axios.post('http://localhost:5000/auctions', { name, description, userId })
+        .then(res => {
+          setAuctions([...auctions, res.data]);
+        }
+      );
+    };
+
+
     return (
       <div>
         {auctions.length > 0 ? (
@@ -27,8 +39,16 @@ function AuctionList({ }) {
         ) : (
           <div>No auctions available</div>
         )}
+        {/** Create a form for adding a new auction to DB */}
+        <form onSubmit={addAuction}>
+          <input type="text" placeholder="Auction name" />
+          <input type="text" placeholder="Auction description" />
+          <button type="submit">Add auction</button>
+        </form>
+
       </div>
     );
 }
+
 
 export default AuctionList;
