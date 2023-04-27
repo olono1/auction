@@ -8,17 +8,12 @@ function AuctionPage({ auction, userId }) {
   const [bidedAmount, setBidedAmount] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
   const [disableBid, setDisableBid] = useState(false);
+  const [ended, setEnded] = useState(false);
 
   useEffect(() => {
     axios.get(`http://localhost:5000/bids?auctionId=${auction.id}`)
       .then(res => {
         setBids(res.data);
-
-        if (res.data.length === 3) {
-          alert('Congratulations, you won the auction');
-          generateInvoice(res.data); // call generateInvoice function after the alert
-          setDisableBid(true); // disable bid button after auction has reached maximum bids
-        }
       })
       .catch(err => {
         console.log(err);
@@ -31,6 +26,15 @@ function AuctionPage({ auction, userId }) {
       .catch(err => {
         console.log(err);
       })
+
+     axios.get('http://localhost:5000/auctions').then(res => {
+      // get the updated version of this auction
+      const updatedAuction = res.data.find(a => a.id === auction.id);
+      console.log(updatedAuction);
+      if (updatedAuction.ended) {
+        setEnded(true);
+      }});
+
   }, [, bidedAmount]);
 
   const bidAmount = (e) => {
@@ -102,7 +106,8 @@ function AuctionPage({ auction, userId }) {
   
   return (
     <div>
-      <h2 className="auction_h2">{auction.name}</h2>
+      {/**Display the auction name with ended sufix when the auction is ended */}
+      <h2 className="auction_h2">{ended ? `${auction.name} (ended)` : auction.name}</h2>
       <p className="auction_p">{auction.description}</p>
       <h2 className="auction_h2">Winning Bid</h2>
       {/**Find the max amount from the bids to this auction. If there is note, write a message */}

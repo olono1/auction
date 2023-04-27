@@ -63,9 +63,17 @@ async function main() {
     if (highestBid && amount <= highestBid.amount) {
       res.status(400).send({ message: 'Bid amount must be higher than the current highest bid' });
     } else {
+      //Check is the auction has aleready 3 bids and only then add a new one. If it has 3 bids set ended to 1
+      const [rows, fieldsAuction] = await connection.execute('SELECT * FROM bids WHERE auctionId = ?', [auctionId]);
+      console.log(rows);
+      if (rows.length >= 2) {
+        await connection.execute('UPDATE auctions SET ended = 1 WHERE id = ?', [auctionId]);
+      }
+      else {
       const [result, fields] = await connection.execute('INSERT INTO bids (amount, auctionId, userId) VALUES (?, ?, ?)', [amount, auctionId, userId]);
       const newBid = { id: result.insertId, amount, auctionId, userId };
       res.status(201).send(newBid);
+      }
     }
   });
 
