@@ -29,6 +29,13 @@ function App() {
       .catch(err => {
         console.log(err);
       })
+
+      //Check if user is logged in
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user) {
+        setLoggedIn(true);
+        setUserId(user.id);
+      }
   }, []);
 
   return (

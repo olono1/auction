@@ -92,7 +92,7 @@ async function main() {
 
   app.post('/auctions', async (req, res) => {
     const { name, description, userId } = req.body;
-    const [result, fields] = await connection.execute('INSERT INTO auctions (name, description, userId) VALUES (?, ?, ?)', [name, description, userId]);
+    const [result, fields] = await connection.execute('INSERT INTO auctions (name, description, userId, ended) VALUES (?, ?, ?, 0)', [name, description, userId]);
     const newAuction = { id: result.insertId, name, description, userId };
     res.status(201).send(newAuction);
   });

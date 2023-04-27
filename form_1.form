@@ -1,0 +1,36 @@
+{
+  "components": [
+    {
+      "text": "# Text",
+      "type": "text",
+      "id": "Field_0mrodj2"
+    },
+    {
+      "label": "Amount to bid",
+      "type": "number",
+      "id": "Field_1bg8vix",
+      "key": "bidAmount"
+    },
+    {
+      "label": "Auction ID number",
+      "type": "number",
+      "id": "Field_12jipie",
+      "key": "auctionId"
+    },
+    {
+      "label": "User ID number",
+      "type": "number",
+      "id": "Field_1n8bt1n",
+      "key": "userId"
+    }
+  ],
+  "type": "default",
+  "id": "Form_1ejc4hv",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.9.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.18.0",
+  "schemaVersion": 7
+}

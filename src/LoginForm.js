@@ -22,6 +22,10 @@ function LoginForm(props) {
       props.setLoggedIn(true);
       props.setUserId(user.id);
       navigate('/');
+      //Save user to local storage
+      localStorage.setItem('user', JSON.stringify(user));
+
+
     } else {
       alert('Invalid email or password');
     }

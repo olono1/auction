@@ -14,7 +14,7 @@ function AuctionList({ userId}) {
         .catch(err => {
           console.log(err);
         });
-    }, []);
+    }, [auctions]);
 
     const addAuction = (e) => {
       e.preventDefault();

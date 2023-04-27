@@ -41,22 +41,46 @@ function AuctionPage({ auction, userId }) {
       return;
     }
 
-    axios.post('http://localhost:5000/bids', {
-      amount: bidedAmount,
-      auctionId: auction.id,
-      userId: userId
-    })
-      .then(res => {
-        setBidedAmount(0);
-        setErrorMessage('');
-      })
-      .catch(err => {
-        if (err.response && err.response.status === 400) {
-          setErrorMessage('Bid is lower than the winning bid');
-        } else {
-          console.log(err);
+    // axios.post('http://localhost:5000/bids', {
+    //   amount: bidedAmount,
+    //   auctionId: auction.id,
+    //   userId: userId
+    // })
+    //   .then(res => {
+    //     setBidedAmount(0);
+    //     setErrorMessage('');
+    //   })
+    //   .catch(err => {
+    //     if (err.response && err.response.status === 400) {
+    //       setErrorMessage('Bid is lower than the winning bid');
+    //     } else {
+    //       console.log(err);
+    //     }
+    //   })
+
+     axios.post('http://localhost:8080/engine-rest/process-definition/key/payment-retrieval/start', {
+        variables: {
+          bidAmount: {
+            value: bidedAmount,
+            type: "Integer"
+          },
+          userId: {
+            value: userId,
+            type: "Integer"
+          },
+          auctionId: {
+            value: auction.id,
+            type: "Integer"
+          },
         }
       })
+        .then(res => {
+          console.log(res);
+        }
+      );
+
+
+  
   }
 
   const generateInvoice = (bids) => {

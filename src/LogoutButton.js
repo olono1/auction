@@ -8,6 +8,8 @@ function LogoutButton(props) {
   const handleLogoutClick = () => {
     props.setLoggedIn(false);
     navigate('/');
+    //Remove user from local storage
+    localStorage.removeItem('user');
   };
 
   return (
