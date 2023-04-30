@@ -4,6 +4,7 @@ import AuctionPage from './AuctionPage';
 import AuctionList from './AuctionList';
 import LoginForm from './LoginForm';
 import LogoutButton from './LogoutButton';
+import Invoice from './Invoice';
 import axios from 'axios';
 import './App.css';
 
@@ -61,6 +62,7 @@ function App() {
             {auctions.map(auction => (
               <Route key={auction.id} path={`/auctions/${auction.id}`} element={<AuctionPage auction={auction} userId={userId}/>} />
             ))}
+            <Route path="/invoice" element={<Invoice />} />
           </>
         )}
       </Routes>

@@ -2,15 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import worker from './worker.js';
-import { Client, logger } from 'camunda-external-task-client-js';
-import open from 'open';
-import mysql from 'mysql2/promise';
+import mysql from 'mysql2/promise'; 
 
 const app = express();
 const port = 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
+
 
 let connection;
 
@@ -107,24 +106,32 @@ async function main() {
 
   // Create an Invoice GET endpoint that takes as parameters the auction and user and bid and send the invoice to the user
   app.get('/invoice', async (req, res) => {
-    const auctionId = req.query.auctionId;
-    const userId = req.query.userId;
-    const bidId = req.query.bidId;
-    const [auctionRows] = await connection.query('SELECT * FROM auctions WHERE id = ?', [auctionId]);
-    const [bidRows] = await connection.query('SELECT * FROM bids WHERE id = ?', [bidId]);
-    const [userRows] = await connection.query('SELECT * FROM users WHERE id = ?', [userId]);
-    const auction = auctionRows[0];
-    const invoice = {
-      auctionName: auction.name,
-      auctionDescription: auction.description,
-      bidAmount: bidRows[0].amount,
-      userEmail: userRows[0].email
-    };
-    res.send(invoice);
+    try {
+      const auctionId = req.query.auctionId;
+      const userId = req.query.userId;
+      const bidAmount = req.query.bidAmount;
+      console.log(`auctionId: ${auctionId}, userId: ${userId}, bidAmount: ${bidAmount}`);
+    
+      const [auctionRows] = await connection.query('SELECT * FROM auctions WHERE id = ?', [auctionId]);
+      const auction = auctionRows[0];
+    
+      const [bidRows] = await connection.query('SELECT * FROM bids WHERE amount = ?', [bidAmount]);
+    
+      const [userRows] = await connection.query('SELECT * FROM users WHERE id = ?', [userId]);
+    
+      const invoice = {
+        auctionName: auction.name,
+        auctionDescription: auction.description,
+        bidAmount: bidRows[0].amount,
+        userEmail: userRows[0].email
+      };
+    
+      res.send(invoice);
+    } catch (err) {
+      console.error('Error fetching invoice:', err);
+      res.status(500).send('Error fetching invoice');
+    }
   });
-
-
-
 
   app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
