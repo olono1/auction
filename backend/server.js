@@ -64,7 +64,6 @@ async function main() {
     } else {
       //Check is the auction has aleready 3 bids and only then add a new one. If it has 3 bids set ended to 1
       const [rows, fieldsAuction] = await connection.execute('SELECT * FROM bids WHERE auctionId = ?', [auctionId]);
-      console.log(rows);
       if (rows.length >= 2) {
         await connection.execute('UPDATE auctions SET ended = 1 WHERE id = ?', [auctionId]);
       }
@@ -105,33 +104,31 @@ async function main() {
   });
 
   // Create an Invoice GET endpoint that takes as parameters the auction and user and bid and send the invoice to the user
-  app.get('/invoice', async (req, res) => {
-    try {
-      const auctionId = req.query.auctionId;
-      const userId = req.query.userId;
-      const bidAmount = req.query.bidAmount;
-      console.log(`auctionId: ${auctionId}, userId: ${userId}, bidAmount: ${bidAmount}`);
+  // app.get('/invoice', async (req, res) => {
+  //   try {
+  //     const auctionId = req.query.auctionId;
+  //     const userId = req.query.userId;
+  //     const bidAmount = req.query.bidAmount;
     
-      const [auctionRows] = await connection.query('SELECT * FROM auctions WHERE id = ?', [auctionId]);
-      const auction = auctionRows[0];
+  //     const [auctionRows] = await connection.query('SELECT * FROM auctions WHERE id = ?', [auctionId]);
     
-      const [bidRows] = await connection.query('SELECT * FROM bids WHERE amount = ?', [bidAmount]);
+  //     const [bidRows] = await connection.query('SELECT * FROM bids WHERE amount = ?', [bidAmount]);
     
-      const [userRows] = await connection.query('SELECT * FROM users WHERE id = ?', [userId]);
+  //     const [userRows] = await connection.query('SELECT * FROM users WHERE id = ?', [userId]);
     
-      const invoice = {
-        auctionName: auction.name,
-        auctionDescription: auction.description,
-        bidAmount: bidRows[0].amount,
-        userEmail: userRows[0].email
-      };
+  //     const invoice = {
+  //       auctionName: auctionRows[0].name,
+  //       auctionDescription: auctionRows[0].description,
+  //       bidAmount: bidRows[0].amount,
+  //       userEmail: userRows[0].email
+  //     };
     
-      res.send(invoice);
-    } catch (err) {
-      console.error('Error fetching invoice:', err);
-      res.status(500).send('Error fetching invoice');
-    }
-  });
+  //     res.send(invoice);
+  //   } catch (err) {
+  //     console.error('Error fetching invoice:', err);
+  //     res.status(500).send('Error fetching invoice');
+  //   }
+  // });
 
   app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
